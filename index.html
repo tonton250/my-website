@@ -1,0 +1,759 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Phần Mềm Quét Mã Tài Khoản Nguồn</title>
+<link href="https://fonts.googleapis.com/css2?family=Oswald:wght@700&family=Be+Vietnam+Pro:wght@400;600;700&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box;}
+
+body{
+  min-height:100vh;
+  background:#0a0008;
+  font-family:'Be Vietnam Pro',Arial,sans-serif;
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  overflow-x:hidden;
+  position:relative;
+}
+
+/* BG gradient */
+body::before{
+  content:'';
+  position:fixed;
+  inset:0;
+  background:
+    radial-gradient(ellipse 60% 40% at 50% 0%, rgba(180,0,0,0.18) 0%, transparent 70%),
+    radial-gradient(ellipse 80% 60% at 50% 100%, rgba(80,0,40,0.25) 0%, transparent 70%);
+  pointer-events:none;
+  z-index:0;
+}
+
+/* HEADER */
+.header{
+  position:relative;
+  z-index:2;
+  text-align:center;
+  padding:28px 20px 10px;
+  width:100%;
+}
+
+.header-title{
+  font-family:'Oswald',sans-serif;
+  font-size:clamp(22px,4vw,46px);
+  font-weight:700;
+  letter-spacing:2px;
+  text-transform:uppercase;
+  background:linear-gradient(180deg,#fff700 0%,#ff6a00 40%,#ff0000 80%);
+  -webkit-background-clip:text;
+  -webkit-text-fill-color:transparent;
+  background-clip:text;
+  text-shadow:none;
+  filter:drop-shadow(0 0 18px rgba(255,80,0,0.7)) drop-shadow(0 2px 6px #000);
+  line-height:1.15;
+}
+
+/* MAIN LAYOUT */
+.main{
+  position:relative;
+  z-index:2;
+  display:flex;
+  align-items:flex-end;
+  justify-content:center;
+  width:100%;
+  max-width:1300px;
+  padding:10px 0 0;
+  gap:0;
+}
+
+/* GIRL SIDES */
+.girl{
+  flex:0 0 auto;
+  width:clamp(130px,18vw,260px);
+  position:relative;
+  align-self:flex-end;
+}
+
+.girl img{
+  width:100%;
+  display:block;
+  filter:drop-shadow(0 0 30px rgba(0,180,255,0.35));
+}
+
+.girl-left{ transform:translateX(20px); }
+.girl-right{ transform:translateX(-20px); }
+
+/* FORM BOX */
+.form-wrap{
+  flex:1 1 auto;
+  max-width:700px;
+  min-width:0;
+  padding:0 10px;
+}
+
+.box{
+  background:linear-gradient(160deg,#2a0000 0%,#1a0000 60%,#200008 100%);
+  border:1.5px solid rgba(180,0,0,0.5);
+  border-radius:22px;
+  padding:30px 36px 28px;
+  box-shadow:0 0 60px rgba(180,0,0,0.25), 0 0 0 1px rgba(255,80,80,0.08) inset;
+}
+
+/* Title badge */
+.box-title{
+  display:block;
+  width:fit-content;
+  margin:0 auto 22px;
+  background:linear-gradient(90deg,#c00000,#e80000,#c00000);
+  border-radius:50px;
+  padding:10px 44px;
+  font-family:'Oswald',sans-serif;
+  font-size:clamp(16px,2.2vw,24px);
+  font-weight:700;
+  letter-spacing:3px;
+  color:#fff;
+  text-transform:uppercase;
+  box-shadow:0 4px 24px rgba(200,0,0,0.5), 0 1px 0 rgba(255,120,120,0.3) inset;
+}
+
+/* Labels */
+.field-label{
+  display:block;
+  font-size:13px;
+  font-weight:700;
+  letter-spacing:1.5px;
+  color:#fff;
+  text-transform:uppercase;
+  margin-bottom:8px;
+  margin-top:16px;
+}
+
+/* Inputs */
+.field-input{
+  width:100%;
+  padding:14px 18px;
+  background:rgba(255,255,255,0.06);
+  border:1.5px solid rgba(255,255,255,0.18);
+  border-radius:12px;
+  color:#fff;
+  font-size:15px;
+  font-family:'Be Vietnam Pro',Arial,sans-serif;
+  outline:none;
+  transition:border-color .2s,box-shadow .2s;
+}
+.field-input::placeholder{color:rgba(255,255,255,0.35);}
+.field-input:focus{
+  border-color:rgba(255,80,80,0.7);
+  box-shadow:0 0 0 3px rgba(200,0,0,0.15);
+}
+
+/* Link cong row */
+.link-row{
+  display:flex;
+  gap:10px;
+  margin-bottom:10px;
+}
+.link-row .field-input{flex:1;}
+
+.btn-chon-cong{
+  flex:0 0 auto;
+  padding:14px 22px;
+  background:linear-gradient(90deg,#cc0000,#ff2200);
+  border:none;
+  border-radius:12px;
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:1px;
+  cursor:pointer;
+  transition:filter .2s,transform .1s;
+  white-space:nowrap;
+  box-shadow:0 4px 16px rgba(200,0,0,0.4);
+}
+.btn-chon-cong:hover{filter:brightness(1.15);}
+.btn-chon-cong:active{transform:scale(0.97);}
+
+/* Cong game select row */
+.select-row{
+  display:flex;
+  gap:10px;
+  align-items:center;
+}
+.select-row select{
+  flex:1;
+  padding:14px 18px;
+  background:rgba(255,255,255,0.06);
+  border:1.5px solid rgba(255,255,255,0.18);
+  border-radius:12px;
+  color:rgba(255,255,255,0.5);
+  font-size:15px;
+  font-family:'Be Vietnam Pro',Arial,sans-serif;
+  outline:none;
+  appearance:none;
+  cursor:pointer;
+}
+.select-row select option{background:#1a0000;color:#fff;}
+.select-row select:focus{
+  border-color:rgba(255,80,80,0.7);
+  color:#fff;
+}
+.btn-chon{
+  flex:0 0 auto;
+  padding:14px 22px;
+  background:linear-gradient(90deg,#cc0000,#ff2200);
+  border:none;
+  border-radius:12px;
+  color:#fff;
+  font-size:14px;
+  font-weight:700;
+  letter-spacing:2px;
+  cursor:pointer;
+  transition:filter .2s,transform .1s;
+  box-shadow:0 4px 16px rgba(200,0,0,0.4);
+}
+.btn-chon:hover{filter:brightness(1.15);}
+.btn-chon:active{transform:scale(0.97);}
+
+/* Main action button */
+.btn-check{
+  width:100%;
+  margin-top:20px;
+  padding:16px;
+  background:linear-gradient(90deg,#b30000 0%,#e80000 50%,#b30000 100%);
+  border:none;
+  border-radius:14px;
+  color:#fff;
+  font-family:'Oswald',sans-serif;
+  font-size:clamp(15px,2vw,20px);
+  font-weight:700;
+  letter-spacing:3px;
+  text-transform:uppercase;
+  cursor:pointer;
+  box-shadow:0 6px 28px rgba(200,0,0,0.55), 0 1px 0 rgba(255,120,120,0.25) inset;
+  transition:filter .2s,transform .1s;
+  position:relative;
+  overflow:hidden;
+}
+.btn-check::after{
+  content:'';
+  position:absolute;
+  top:0;left:-100%;
+  width:60%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,255,255,0.15),transparent);
+  transition:left .4s;
+}
+.btn-check:hover::after{left:150%;}
+.btn-check:hover{filter:brightness(1.12);}
+.btn-check:active{transform:scale(0.98);}
+
+/* Social buttons */
+.social-row{
+  display:flex;
+  gap:12px;
+  margin-top:12px;
+}
+.btn-social{
+  flex:1;
+  padding:13px;
+  border:none;
+  border-radius:12px;
+  color:#fff;
+  font-size:14px;
+  font-weight:600;
+  cursor:pointer;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  gap:8px;
+  transition:filter .2s,transform .1s;
+  box-shadow:0 4px 14px rgba(0,0,0,0.35);
+}
+.btn-social:hover{filter:brightness(1.12);}
+.btn-social:active{transform:scale(0.97);}
+.btn-tele{background:linear-gradient(90deg,#0077b5,#0099cc);}
+.btn-fb{background:linear-gradient(90deg,#1a3c6e,#2563b0);}
+.btn-social svg{width:18px;height:18px;fill:#fff;flex-shrink:0;}
+
+/* FOOTER TEXT */
+.footer-note{
+  position:relative;
+  z-index:2;
+  text-align:center;
+  padding:16px 20px 20px;
+  font-size:12px;
+  color:rgba(255,255,255,0.35);
+  max-width:800px;
+}
+
+/* ====== POPUP ====== */
+.popup{
+  display:none;
+  position:fixed;
+  inset:0;
+  background:rgba(0,0,0,0.88);
+  justify-content:center;
+  align-items:center;
+  z-index:999;
+  backdrop-filter:blur(6px);
+}
+.popup.show{display:flex;}
+
+/* Scanline overlay khi popup mo */
+.popup.show::before{
+  content:'';
+  position:fixed;inset:0;pointer-events:none;
+  background:repeating-linear-gradient(0deg,transparent,transparent 2px,rgba(255,0,0,0.025) 2px,rgba(255,0,0,0.025) 4px);
+  animation:scanPop 6s linear infinite;
+  z-index:0;
+}
+@keyframes scanPop{0%{background-position:0 0;}100%{background-position:0 100px;}}
+
+/* BG nhip tim do */
+.popup.show::after{
+  content:'';
+  position:fixed;inset:0;pointer-events:none;z-index:0;
+  animation:bgHeartbeat 1.4s ease-in-out infinite;
+}
+@keyframes bgHeartbeat{
+  0%,100%{background:rgba(160,0,0,0);}
+  30%{background:rgba(160,0,0,0.07);}
+  60%{background:rgba(160,0,0,0.03);}
+}
+
+.popup-box{
+  position:relative;z-index:2;
+  background:linear-gradient(160deg,#1e0000 0%,#0f0008 70%,#1a0000 100%);
+  border:2px solid rgba(220,0,0,0.75);
+  border-radius:18px;
+  padding:0 0 28px;
+  max-width:460px;
+  width:92%;
+  text-align:center;
+  box-shadow:
+    0 0 0 1px rgba(255,60,60,0.12),
+    0 0 50px rgba(200,0,0,0.5),
+    0 0 100px rgba(130,0,0,0.25);
+  animation:popIn .3s cubic-bezier(.34,1.56,.64,1), boxShake 0.25s ease infinite alternate;
+  overflow:hidden;
+}
+@keyframes popIn{from{transform:scale(0.8);opacity:0;}to{transform:scale(1);opacity:1;}}
+@keyframes boxShake{
+  0%{transform:translateX(-1.5px) rotate(-0.15deg);}
+  100%{transform:translateX(1.5px) rotate(0.15deg);}
+}
+
+/* Giat manh 1 lan khi ket qua canh bao xuat hien */
+.popup-box.alert-hit{
+  animation:boxShake 0.25s ease infinite alternate, alertSlam 0.45s cubic-bezier(.36,.07,.19,.97) both;
+}
+@keyframes alertSlam{
+  0%{transform:scale(1) translate(0,0) rotate(0deg);}
+  15%{transform:scale(1.06) translate(-10px,-4px) rotate(-2deg);}
+  30%{transform:scale(1.03) translate(9px,3px) rotate(2deg);}
+  45%{transform:scale(1.05) translate(-7px,-2px) rotate(-1.5deg);}
+  60%{transform:scale(1.02) translate(6px,2px) rotate(1deg);}
+  75%{transform:scale(1.03) translate(-4px,-1px) rotate(-0.5deg);}
+  90%{transform:scale(1.01) translate(2px,1px) rotate(0.3deg);}
+  100%{transform:scale(1) translate(0,0) rotate(0deg);}
+}
+
+/* Flash do toan man hinh dung 1 lan khi dap canh bao */
+.flash-hit{
+  position:fixed;inset:0;z-index:1000;pointer-events:none;
+  background:rgba(255,0,0,0.35);
+  animation:flashOut 0.4s ease-out forwards;
+}
+@keyframes flashOut{0%{opacity:1;}100%{opacity:0;}}
+
+/* Thanh canh bao soc vang do */
+.popup-stripe{
+  width:100%;height:7px;
+  background:repeating-linear-gradient(90deg,#cc0000 0,#cc0000 18px,#ff8800 18px,#ff8800 36px);
+  background-size:72px 100%;
+  animation:stripeScroll 0.5s linear infinite;
+  flex-shrink:0;
+}
+@keyframes stripeScroll{0%{background-position:0 0;}100%{background-position:72px 0;}}
+
+/* Goc canh bao */
+.p-corner{position:absolute;width:16px;height:16px;}
+.p-tl{top:18px;left:10px;border-top:2px solid rgba(255,0,0,0.8);border-left:2px solid rgba(255,0,0,0.8);}
+.p-tr{top:18px;right:10px;border-top:2px solid rgba(255,0,0,0.8);border-right:2px solid rgba(255,0,0,0.8);}
+.p-bl{bottom:10px;left:10px;border-bottom:2px solid rgba(255,0,0,0.8);border-left:2px solid rgba(255,0,0,0.8);}
+.p-br{bottom:10px;right:10px;border-bottom:2px solid rgba(255,0,0,0.8);border-right:2px solid rgba(255,0,0,0.8);}
+
+.popup-inner{padding:24px 32px 0;}
+
+/* Icon vong tron */
+.popup-icon-wrap{position:relative;display:inline-block;margin-bottom:14px;}
+.p-ring{
+  position:absolute;border-radius:50%;
+  border:2px solid rgba(255,0,0,0.5);
+  animation:ringExp 1.2s ease-out infinite;
+}
+.p-ring1{inset:-14px;}
+.p-ring2{inset:-26px;border-color:rgba(255,0,0,0.3);animation-delay:.35s;}
+.p-ring3{inset:-40px;border-color:rgba(255,0,0,0.15);animation-delay:.7s;}
+@keyframes ringExp{0%{transform:scale(0.8);opacity:1;}100%{transform:scale(1.5);opacity:0;}}
+.popup-icon{
+  position:relative;z-index:1;
+  font-size:46px;line-height:1;
+  display:block;
+  filter:drop-shadow(0 0 16px rgba(255,0,0,0.9));
+  animation:iconFlash 1.4s ease-in-out infinite;
+}
+@keyframes iconFlash{0%,100%{filter:drop-shadow(0 0 10px rgba(255,0,0,0.7));}50%{filter:drop-shadow(0 0 28px rgba(255,50,0,1));}}
+
+/* Title */
+.popup-box h2{
+  font-family:'Oswald',sans-serif;
+  font-size:clamp(18px,3vw,24px);
+  letter-spacing:3px;
+  color:#ff1a1a;
+  margin-bottom:4px;
+  text-transform:uppercase;
+  text-shadow:0 0 20px rgba(255,0,0,0.8),0 0 40px rgba(255,0,0,0.4);
+  animation:titleFlicker 3s linear infinite;
+}
+@keyframes titleFlicker{0%,94%,96%,98%,100%{opacity:1;}95%{opacity:0.6;}97%{opacity:0.8;}99%{opacity:0.5;}}
+
+.popup-sub{
+  font-size:11px;letter-spacing:4px;
+  color:rgba(255,80,80,0.65);
+  text-transform:uppercase;
+  margin-bottom:18px;
+}
+
+/* Progress */
+.p-progress-wrap{
+  height:5px;background:rgba(255,255,255,0.07);
+  border-radius:4px;overflow:hidden;margin-bottom:14px;
+}
+.p-progress-bar{
+  height:100%;width:0%;
+  background:linear-gradient(90deg,#8b0000,#ff2200,#ff6600);
+  border-radius:4px;
+  box-shadow:0 0 10px rgba(255,30,0,0.8);
+  transition:width .3s ease;
+}
+
+/* Status box */
+.p-status{
+  position:relative;overflow:hidden;
+  background:rgba(255,0,0,0.07);
+  border:1px solid rgba(255,0,0,0.25);
+  border-radius:8px;
+  padding:10px 14px;
+  font-size:13px;
+  color:rgba(255,210,210,0.9);
+  text-align:left;
+  margin-bottom:14px;
+  min-height:38px;
+}
+.p-status::after{
+  content:'';position:absolute;top:0;left:-100%;width:80%;height:100%;
+  background:linear-gradient(90deg,transparent,rgba(255,0,0,0.08),transparent);
+  animation:statusSweep 2.2s ease-in-out infinite;
+}
+@keyframes statusSweep{0%{left:-100%;}100%{left:200%;}}
+
+/* Divider */
+.p-divider{height:1px;background:linear-gradient(90deg,transparent,rgba(255,0,0,0.5),transparent);margin:14px 0;}
+
+/* Result table */
+.p-result-table{width:100%;border-collapse:collapse;margin-bottom:14px;}
+.p-result-table td{padding:9px 2px;font-size:13px;border-bottom:1px solid rgba(255,0,0,0.08);}
+.p-result-table tr:last-child td{border:none;}
+.p-result-table .lbl{text-align:left;color:rgba(255,255,255,0.4);font-size:11px;letter-spacing:1px;text-transform:uppercase;width:38%;}
+.p-result-table .val{text-align:right;color:#fff;font-weight:600;}
+.val-danger{color:#ff3333!important;text-shadow:0 0 8px rgba(255,0,0,0.6);}
+.val-warn{color:#ff8800!important;text-shadow:0 0 8px rgba(255,100,0,0.5);}
+.val-ok{color:#22c55e!important;}
+
+/* Close button */
+.btn-close-popup{
+  width:100%;
+  padding:14px;
+  background:linear-gradient(90deg,#7a0000,#cc0000,#7a0000);
+  background-size:200% 100%;
+  border:1px solid rgba(255,80,80,0.35);
+  border-radius:10px;
+  color:#fff;
+  font-family:'Oswald',sans-serif;
+  font-size:16px;letter-spacing:2px;
+  text-transform:uppercase;
+  cursor:pointer;
+  animation:btnGlow 2s linear infinite;
+  box-shadow:0 4px 20px rgba(180,0,0,0.5);
+}
+@keyframes btnGlow{0%{background-position:200% 0;box-shadow:0 4px 20px rgba(180,0,0,0.5);}50%{box-shadow:0 4px 30px rgba(255,0,0,0.8);}100%{background-position:-200% 0;box-shadow:0 4px 20px rgba(180,0,0,0.5);}}
+.btn-close-popup:hover{filter:brightness(1.2);}
+
+/* Spinner */
+.spinner{
+  width:38px;height:38px;
+  border:3px solid rgba(255,0,0,0.15);
+  border-top-color:#ff2200;
+  border-right-color:rgba(255,80,0,0.5);
+  border-radius:50%;
+  animation:spin .6s linear infinite;
+  margin:8px auto 6px;
+}
+@keyframes spin{to{transform:rotate(360deg);}}
+
+@media(max-width:700px){
+  .girl{display:none;}
+  .form-wrap{padding:0 12px;}
+  .box{padding:24px 18px 22px;}
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+  <div class="header-title">Phần Mềm Quét Mã Tài Khoản Nguồn</div>
+</div>
+
+<!-- MAIN -->
+<div class="main">
+
+  <!-- FORM -->
+  <div class="form-wrap">
+    <div class="box">
+
+      <span class="box-title">CHECK MÃ ẨN</span>
+
+      <label class="field-label">Tài khoản game</label>
+      <input class="field-input" id="account" placeholder="Nhập tài khoản game" autocomplete="off">
+
+      <label class="field-label">Link cổng game</label>
+      <div class="link-row">
+        <input class="field-input" id="linkInput" placeholder="Nhập Link">
+        <button class="btn-chon-cong" onclick="chonCong()">Chọn cổng game</button>
+      </div>
+
+      <div class="select-row">
+        <select id="portal">
+          <option value="">Chọn cổng game</option>
+          <option>J88</option>
+          <option>789Club</option>
+          <option>Go88</option>
+          <option>Hi88</option>
+          <option>F8BET</option>
+          <option>8KBET</option>
+        </select>
+        <button class="btn-chon" onclick="applyPortal()">CHỌN</button>
+      </div>
+
+      <button class="btn-check" onclick="checkAccount()">TIẾN HÀNH KIỂM TRA</button>
+
+      <div class="social-row">
+        <button class="btn-social btn-tele" onclick="openTele()">
+          <svg viewBox="0 0 24 24"><path d="M11.944 0A12 12 0 0 0 0 12a12 12 0 0 0 12 12 12 12 0 0 0 12-12A12 12 0 0 0 12 0a12 12 0 0 0-.056 0zm4.962 7.224c.1-.002.321.023.465.14a.506.506 0 0 1 .171.325c.016.093.036.306.02.472-.18 1.898-.962 6.502-1.36 8.627-.168.9-.499 1.201-.82 1.23-.696.065-1.225-.46-1.9-.902-1.056-.693-1.653-1.124-2.678-1.8-1.185-.78-.417-1.21.258-1.91.177-.184 3.247-2.977 3.307-3.23.007-.032.014-.15-.056-.212s-.174-.041-.249-.024c-.106.024-1.793 1.14-5.061 3.345-.48.33-.913.49-1.302.48-.428-.008-1.252-.241-1.865-.44-.752-.245-1.349-.374-1.297-.789.027-.216.325-.437.893-.663 3.498-1.524 5.83-2.529 6.998-3.014 3.332-1.386 4.025-1.627 4.476-1.635z"/></svg>
+          Telegram hỗ trợ
+        </button>
+        <button class="btn-social btn-fb" onclick="openFB()">
+          <svg viewBox="0 0 24 24"><path d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.47h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.47h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z"/></svg>
+          Facebook
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+
+
+</div>
+
+<!-- POPUP -->
+<div class="popup" id="popup">
+  <div class="popup-box" id="popupBox">
+    <div class="popup-stripe"></div>
+    <div class="p-corner p-tl"></div>
+    <div class="p-corner p-tr"></div>
+    <div class="p-corner p-bl"></div>
+    <div class="p-corner p-br"></div>
+
+    <div class="popup-inner">
+      <div class="popup-icon-wrap">
+        <div class="p-ring p-ring1"></div>
+        <div class="p-ring p-ring2"></div>
+        <div class="p-ring p-ring3"></div>
+        <span class="popup-icon" id="popupIcon">🔍</span>
+      </div>
+
+      <h2 id="popupTitle">ĐANG PHÂN TÍCH</h2>
+      <div class="popup-sub" id="popupSub">● HỆ THỐNG ĐANG QUÉT ●</div>
+
+      <div class="p-progress-wrap">
+        <div class="p-progress-bar" id="pbar"></div>
+      </div>
+
+      <div class="p-status" id="pStatus">
+        <span id="pStatusText">Đang kết nối máy chủ bảo mật...</span>
+      </div>
+
+      <div class="p-divider"></div>
+
+      <table class="p-result-table" id="pResultTable" style="display:none;">
+        <tr><td class="lbl">Tài khoản</td><td class="val" id="rAcc">—</td></tr>
+        <tr><td class="lbl">Cổng game</td><td class="val" id="rPortal">—</td></tr>
+        <tr><td class="lbl">Trạng thái</td><td class="val val-danger" id="rStatus">—</td></tr>
+        <tr><td class="lbl">Mã nguồn</td><td class="val val-warn" id="rCode">—</td></tr>
+        <tr><td class="lbl">Mức độ</td><td class="val val-danger">⚠ NGHIÊM TRỌNG</td></tr>
+      </table>
+
+      <button class="btn-close-popup" id="btnClose" style="display:none" onclick="closePopup()">
+        ĐÃ HIỂU — ĐÓNG CẢNH BÁO
+      </button>
+    </div>
+  </div>
+</div>
+
+<script>
+var SCAN_STEPS = [
+  {t:400,  pct:15, text:'Đang kết nối máy chủ bảo mật...'},
+  {t:900,  pct:35, text:'Truy xuất dữ liệu tài khoản...'},
+  {t:1500, pct:60, text:'Phân tích mã đại lý liên kết...'},
+  {t:2100, pct:80, text:'⚠ Phát hiện mã nguồn bất thường!'},
+  {t:2600, pct:95, text:'🚨 Xác nhận tài khoản bị khoá mã ngoài!'},
+];
+
+function chonCong(){
+  var p = document.getElementById('portal');
+  var link = document.getElementById('linkInput').value.trim();
+  if(link){ alert('Link đã nhập: '+link); return; }
+  var opts=['J88','789Club','Go88','Hi88','F8BET','8KBET'];
+  p.value=opts[Math.floor(Math.random()*opts.length)];
+}
+function applyPortal(){
+  var p=document.getElementById('portal');
+  if(p.value){ document.getElementById('linkInput').value=''; alert('Đã chọn cổng: '+p.value); }
+  else{ alert('Vui lòng chọn cổng game'); }
+}
+
+/* ===== AM THANH CANH BAO (Web Audio API, khong can file mp3) ===== */
+var _audioCtx=null;
+function getAudioCtx(){
+  if(!_audioCtx){
+    _audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  }
+  if(_audioCtx.state==='suspended'){ _audioCtx.resume(); }
+  return _audioCtx;
+}
+function playAlertSound(){
+  try{
+    var ctx = getAudioCtx();
+    var now = ctx.currentTime;
+
+    // Tieng "bup" tram va manh ngay luc dap canh bao
+    var thump = ctx.createOscillator();
+    var thumpGain = ctx.createGain();
+    thump.type='sine';
+    thump.frequency.setValueAtTime(160, now);
+    thump.frequency.exponentialRampToValueAtTime(40, now+0.18);
+    thumpGain.gain.setValueAtTime(0.9, now);
+    thumpGain.gain.exponentialRampToValueAtTime(0.001, now+0.22);
+    thump.connect(thumpGain).connect(ctx.destination);
+    thump.start(now);
+    thump.stop(now+0.25);
+
+    // 3 tieng beep canh bao lien tiep (kieu coi bao dong)
+    var beepTimes=[0.05,0.22,0.39];
+    beepTimes.forEach(function(t){
+      var osc = ctx.createOscillator();
+      var gain = ctx.createGain();
+      osc.type='square';
+      osc.frequency.setValueAtTime(880, now+t);
+      gain.gain.setValueAtTime(0.0001, now+t);
+      gain.gain.exponentialRampToValueAtTime(0.25, now+t+0.02);
+      gain.gain.exponentialRampToValueAtTime(0.0001, now+t+0.14);
+      osc.connect(gain).connect(ctx.destination);
+      osc.start(now+t);
+      osc.stop(now+t+0.16);
+    });
+  }catch(e){
+    console.warn('Khong the phat am thanh:', e);
+  }
+}
+
+/* ===== HIEU UNG DAP CANH BAO (shake + flash do) ===== */
+function trigerAlertHit(){
+  var box = document.getElementById('popupBox');
+  box.classList.remove('alert-hit');
+  // Trigger reflow de animation chay lai tu dau
+  void box.offsetWidth;
+  box.classList.add('alert-hit');
+
+  var flash = document.createElement('div');
+  flash.className='flash-hit';
+  document.body.appendChild(flash);
+  setTimeout(function(){ flash.remove(); }, 450);
+
+  playAlertSound();
+}
+
+function checkAccount(){
+  var account=document.getElementById('account').value.trim();
+  var portal=document.getElementById('portal').value;
+  var link=document.getElementById('linkInput').value.trim();
+  var cong=link||portal;
+  if(!account){ alert('Vui lòng nhập tài khoản game'); return; }
+  if(!cong){ alert('Vui lòng chọn hoặc nhập link cổng game'); return; }
+
+  // Mo khoa AudioContext ngay trong click event (yeu cau cua trinh duyet)
+  getAudioCtx();
+
+  // Reset
+  document.getElementById('popupIcon').textContent='🔍';
+  document.getElementById('popupTitle').textContent='ĐANG PHÂN TÍCH';
+  document.getElementById('popupSub').textContent='● HỆ THỐNG ĐANG QUÉT ●';
+  document.getElementById('pStatusText').textContent='Đang kết nối máy chủ bảo mật...';
+  document.getElementById('pbar').style.width='0%';
+  document.getElementById('pResultTable').style.display='none';
+  document.getElementById('btnClose').style.display='none';
+  document.getElementById('pStatus').style.borderColor='rgba(255,0,0,0.25)';
+  document.getElementById('popup').classList.add('show');
+
+  // Animate steps
+  SCAN_STEPS.forEach(function(s){
+    setTimeout(function(){
+      document.getElementById('pStatusText').textContent=s.text;
+      document.getElementById('pbar').style.width=s.pct+'%';
+    },s.t);
+  });
+
+  // Show result
+  setTimeout(function(){
+    var codes=['MA-7X92-KL','MA-K41B-9Q','MA-3Z08-RX','MA-9QW1-TP'];
+    var code=codes[Math.floor(Math.random()*codes.length)];
+    document.getElementById('pbar').style.width='100%';
+    document.getElementById('popupIcon').textContent='🚨';
+    document.getElementById('popupTitle').textContent='PHÁT HIỆN CẢNH BÁO';
+    document.getElementById('popupSub').textContent='● TÀI KHOẢN BỊ KHOÁ MÃ NGOÀI ●';
+    document.getElementById('pStatus').style.borderColor='rgba(255,0,0,0.5)';
+    document.getElementById('pStatus').style.background='rgba(255,0,0,0.1)';
+    document.getElementById('pStatusText').textContent='🚨 Tài khoản đang bị dính mã đại lý ngoài! Phải chờ hết mã mới dùng được.';
+    document.getElementById('rAcc').textContent=account;
+    document.getElementById('rPortal').textContent=cong;
+    document.getElementById('rStatus').textContent='DÍNH MÃ ĐẠI LÝ NGOÀI';
+    document.getElementById('rCode').textContent=code;
+    document.getElementById('pResultTable').style.display='table';
+    document.getElementById('btnClose').style.display='block';
+
+    // Dap popup + flash do + am thanh canh bao ngay luc nay
+    trigerAlertHit();
+  },3200);
+}
+
+function closePopup(){
+  document.getElementById('popup').classList.remove('show');
+}
+function openTele(){ window.open('https://t.me/','_blank'); }
+function openFB(){ window.open('https://facebook.com/','_blank'); }
+</script>
+</body>
+</html>
